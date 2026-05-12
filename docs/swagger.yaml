@@ -1,0 +1,12 @@
+basePath: /api
+info:
+  contact: {}
+  title: RAMS API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
