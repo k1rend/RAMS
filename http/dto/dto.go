@@ -2,6 +2,8 @@ package dto
 
 import ()
 
+// DTOs for authentication requests and responses
+// Auth DTOs
 type RegisterRequest struct {
 	Username string `json:"username"`
 	Email	string `json:"email"`
@@ -30,3 +32,43 @@ type RefreshResponse struct {
 	AccessToken string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+
+// Resource DTOs
+
+type Resource struct {
+	ID int32 `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Resource string `json:"resource"`
+	ResourceType string `json:"resource_type"`
+	OwnerID int32 `json:"owner_id"`
+	CreatedAt string `json:"created_at"`
+}
+
+type BaseResourceInfo struct {
+	ID int32 `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	ResourceType string `json:"resource_type"`
+}
+
+type CreateResourceRequest struct {
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Resource string `json:"resource"`
+	ResourceType string `json:"resource_type"`
+} // owner_id will be determined from JWT claims
+
+
+type GetAvailableResourcesResponse struct {
+	Resources []Resource `json:"resources"`
+}
+
+type ListResourcesResponse struct {
+	Resources []BaseResourceInfo `json:"resources"`
+}
+
+
+// Requests DTOs
+

@@ -34,3 +34,12 @@ insert into users (username, email, password_hash, first_name, last_name, depart
 insert into roles (code, name) values ('ADMIN', 'Administrator'), ('EMPLOYEE', 'Regular Employee'), ('APPROVER', 'Approver');
 insert into user_roles (user_id, role_id) values (1, 1);
 
+CREATE TABLE resources(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    resource TEXT NOT NULL,
+    resource_type VARCHAR(50) NOT NULL,
+    owner_id INTEGER REFERENCES users(id),
+    created_at DATE DEFAULT CURRENT_DATE
+);

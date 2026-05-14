@@ -26,3 +26,14 @@ CREATE TABLE user_roles(
     role_id INTEGER REFERENCES roles(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
+
+CREATE TABLE resources(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    resource TEXT NOT NULL,
+    resource_type VARCHAR(50) NOT NULL,
+    owner_id INTEGER REFERENCES users(id),
+    created_at DATE DEFAULT CURRENT_DATE
+);
+

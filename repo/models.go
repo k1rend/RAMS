@@ -13,6 +13,16 @@ type Department struct {
 	Name string
 }
 
+type Resource struct {
+	ID           int32
+	Name         string
+	Description  string
+	Resource     string
+	ResourceType string
+	OwnerID      pgtype.Int4
+	CreatedAt    pgtype.Date
+}
+
 type Role struct {
 	ID   int32
 	Code string

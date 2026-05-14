@@ -14,7 +14,6 @@ func NewAuthHandler(authService *auth.AuthService) *AuthHandler {
 	return &AuthHandler{authService: authService}
 }
 
-
 // Register godoc
 // @Summary Register a new user
 // @Description Admin can register a new user with the provided details
@@ -87,3 +86,5 @@ func (h *AuthHandler) Refresh(c echo.Context) error {
 	}
 	return c.JSON(200, dto.RefreshResponse{AccessToken: accessToken, RefreshToken: refreshToken})
 }
+
+// TODO: Получение данных о владельцах ресурсов и согласующих
