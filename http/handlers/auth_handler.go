@@ -31,7 +31,7 @@ func (h *AuthHandler) Register(c echo.Context) error {
 	}
 
 	user, err := h.authService.Register(c.Request().Context(),
-		req.Username, req.Email, req.Password, req.FirstName, req.LastName, req.DepartmentId, req.Roles)
+		req.Username, req.Email, req.Password, req.FirstName, req.LastName, req.DepartmentId, req.ManagerId, req.Roles)
 
 	if err != nil {
 		return c.JSON(500, map[string]string{"error": "Failed to register user"})

@@ -12,8 +12,8 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-insert into users (username, email, password_hash, first_name, last_name, department_id)
-values ($1, $2, $3, $4, $5, $6) returning id, username, email, password_hash, first_name, last_name, department_id, is_active, created_at
+insert into users (username, email, password_hash, first_name, last_name, department_id, manager_id, job_title)
+values ($1, $2, $3, $4, $5, $6, $7, $8) returning id, username, email, password_hash, first_name, last_name, department_id, manager_id, job_title, is_active, created_at
 `
 
 type CreateUserParams struct {
@@ -22,7 +22,9 @@ type CreateUserParams struct {
 	PasswordHash string
 	FirstName    string
 	LastName     string
-	DepartmentID pgtype.Int4
+	DepartmentID int32
+	ManagerID    pgtype.Int4
+	JobTitle     pgtype.Text
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -33,6 +35,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.FirstName,
 		arg.LastName,
 		arg.DepartmentID,
+		arg.ManagerID,
+		arg.JobTitle,
 	)
 	var i User
 	err := row.Scan(
@@ -43,14 +47,51 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.FirstName,
 		&i.LastName,
 		&i.DepartmentID,
+		&i.ManagerID,
+		&i.JobTitle,
 		&i.IsActive,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
+const getManagerID = `-- name: GetManagerID :one
+select manager_id from users where id = $1
+`
+
+func (q *Queries) GetManagerID(ctx context.Context, id int32) (pgtype.Int4, error) {
+	row := q.db.QueryRow(ctx, getManagerID, id)
+	var manager_id pgtype.Int4
+	err := row.Scan(&manager_id)
+	return manager_id, err
+}
+
+const getSecurityEmployeesID = `-- name: GetSecurityEmployeesID :many
+select user_id from user_roles where role_id = (select id from roles where code = 'security')
+`
+
+func (q *Queries) GetSecurityEmployeesID(ctx context.Context) ([]int32, error) {
+	rows, err := q.db.Query(ctx, getSecurityEmployeesID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []int32
+	for rows.Next() {
+		var user_id int32
+		if err := rows.Scan(&user_id); err != nil {
+			return nil, err
+		}
+		items = append(items, user_id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserByUsername = `-- name: GetUserByUsername :one
-select id, username, email, password_hash, first_name, last_name, department_id, is_active, created_at from users where username = $1
+select id, username, email, password_hash, first_name, last_name, department_id, manager_id, job_title, is_active, created_at from users where username = $1
 `
 
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
@@ -64,8 +105,36 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.FirstName,
 		&i.LastName,
 		&i.DepartmentID,
+		&i.ManagerID,
+		&i.JobTitle,
 		&i.IsActive,
 		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserInfoByID = `-- name: GetUserInfoByID :one
+select u.first_name || ' ' || u.last_name, u.email, u.job_title, d.name as department_name
+from users u
+left join departments d on u.department_id = d.id
+where u.id = $1
+`
+
+type GetUserInfoByIDRow struct {
+	Column1        interface{}
+	Email          string
+	JobTitle       pgtype.Text
+	DepartmentName pgtype.Text
+}
+
+func (q *Queries) GetUserInfoByID(ctx context.Context, id int32) (GetUserInfoByIDRow, error) {
+	row := q.db.QueryRow(ctx, getUserInfoByID, id)
+	var i GetUserInfoByIDRow
+	err := row.Scan(
+		&i.Column1,
+		&i.Email,
+		&i.JobTitle,
+		&i.DepartmentName,
 	)
 	return i, err
 }

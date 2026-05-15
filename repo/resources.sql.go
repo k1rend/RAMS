@@ -35,6 +35,17 @@ func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) 
 	return err
 }
 
+const getResourceOwnerID = `-- name: GetResourceOwnerID :one
+select owner_id from resources where id = $1
+`
+
+func (q *Queries) GetResourceOwnerID(ctx context.Context, id int32) (pgtype.Int4, error) {
+	row := q.db.QueryRow(ctx, getResourceOwnerID, id)
+	var owner_id pgtype.Int4
+	err := row.Scan(&owner_id)
+	return owner_id, err
+}
+
 const listResources = `-- name: ListResources :many
 select r.id, r.name, r.description, r.resource_type
 from resources r

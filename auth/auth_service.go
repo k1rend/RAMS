@@ -29,6 +29,7 @@ func (s *AuthService) Register(
 	firstName string,
 	lastName string,
 	departmentID int,
+	managerID int,
 	roles []int32,
 ) (repo.User, error) {
 
@@ -42,7 +43,8 @@ func (s *AuthService) Register(
 		PasswordHash: string(hash),
 		FirstName:    firstName,
 		LastName:     lastName,
-		DepartmentID: pgtype.Int4{Int32: int32(departmentID), Valid: true},
+		DepartmentID: int32(departmentID),
+		ManagerID:      pgtype.Int4{Int32: int32(managerID), Valid: true},
 	})
 	if err != nil {
 		return repo.User{}, err

@@ -8,9 +8,29 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ApprovalWorkflow struct {
+	ID         int32
+	RequestID  pgtype.Int4
+	ApproverID pgtype.Int4
+	StepOrder  int32
+	Status     string
+	CreatedAt  pgtype.Date
+}
+
 type Department struct {
 	ID   int32
 	Name string
+}
+
+type Request struct {
+	ID           int32
+	ApplicantID  pgtype.Int4
+	ResourceID   pgtype.Int4
+	AccessType   string
+	AccessReason string
+	Status       string
+	Comments     pgtype.Text
+	CreatedAt    pgtype.Date
 }
 
 type Resource struct {
@@ -36,7 +56,9 @@ type User struct {
 	PasswordHash string
 	FirstName    string
 	LastName     string
-	DepartmentID pgtype.Int4
+	DepartmentID int32
+	ManagerID    pgtype.Int4
+	JobTitle     pgtype.Text
 	IsActive     pgtype.Bool
 	CreatedAt    pgtype.Date
 }
